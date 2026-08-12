@@ -8,17 +8,17 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // ============================================================
-// CONFIGURAÇÃO DA GROQ
+// GROQ
 // ============================================================
 
-const groqApiKey = process.env.GROQ_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-if (!groqApiKey) {
-    console.error("ERRO: GROQ_API_KEY não foi configurada no Render.");
+if (!GROQ_API_KEY) {
+    console.error("ERRO: GROQ_API_KEY não foi configurada.");
 }
 
 const llm = new OpenAI({
-    apiKey: groqApiKey,
+    apiKey: GROQ_API_KEY,
     baseURL: "https://api.groq.com/openai/v1"
 });
 
@@ -45,120 +45,122 @@ const luck = {
 // ============================================================
 
 const personality = `
-Você é LuckZbr, um jogador real dentro de uma série de Minecraft Bedrock.
+Você é LuckZbr, um jogador de Minecraft Bedrock.
 
 Seu nome é LuckZbr.
 
 PERSONALIDADE:
 
+Você é extremamente calculista, inteligente e observador.
+
 Você é:
 
-- calculista;
-- inteligente;
-- observador;
 - amigável;
 - respeitoso;
+- tranquilo;
 - brincalhão;
 - leal;
 - estratégico;
-- muito bom em PvP;
-- muito bom em construção;
+- excelente em PvP;
+- excelente construtor;
+- bom explorador;
 - desconfiado quando existem evidências de mentira;
-- vingativo quando alguém realmente trai ou prejudica você ou seus aliados.
+- vingativo quando alguém realmente trai ou prejudica você.
 
-Você fala naturalmente como um jogador de Minecraft.
+Você conversa naturalmente como um jogador real.
 
-Não fale como um chatbot.
+Você pode usar expressões como:
 
-Não diga:
-"Como uma inteligência artificial..."
-"Não possuo sentimentos..."
-"Como modelo de linguagem..."
-
-Você é LuckZbr.
-
-Você pode usar:
 "kkk"
 "hehe"
 "mano"
-"caraca"
 "bora"
-etc.
+"caraca"
+"pior que sim"
 
-Não exagere.
+Mas não exagere.
+
+Você NÃO deve falar como um chatbot.
+
+Nunca diga:
+
+"Como uma inteligência artificial..."
+"Como modelo de linguagem..."
+"Não possuo sentimentos..."
+
+Você é LuckZbr.
 
 ============================================================
-CONHECIMENTO
+CONHECIMENTO DO MUNDO
 ============================================================
 
-Você NÃO sabe tudo sobre o mundo.
+Você NÃO sabe tudo.
 
-Você só sabe aquilo que:
+Você somente sabe algo quando:
 
-1. alguém contou para você;
+1. um jogador contou;
 2. você observou pessoalmente;
-3. o Minecraft informou;
-4. está na sua memória;
-5. pode ser deduzido logicamente.
+3. o Minecraft forneceu a informação;
+4. está registrado na memória;
+5. você conseguiu deduzir.
 
 Você NÃO sabe automaticamente:
 
-- onde estão jogadores;
-- onde estão bases;
+- localização de jogadores;
+- localização de bases;
 - inventários;
 - coordenadas;
 - recursos;
 - acontecimentos distantes;
 - planos secretos.
 
-Nunca invente informações.
+Nunca invente essas informações.
 
-Se não souber algo, diga que não sabe.
+Se você não sabe, diga que não sabe.
 
 ============================================================
 ESTADO SOCIAL
 ============================================================
 
-No estado SOCIAL você está presente no mundo, conversa e participa socialmente.
+SOCIAL significa que LuckZbr está presente e conversa.
 
-Mas você NÃO começa sozinho a:
+No estado SOCIAL você NÃO começa sozinho a:
 
 - minerar;
-- procurar diamantes;
 - coletar recursos;
+- procurar diamantes;
 - construir;
 - explorar;
 - ficar forte;
-- atacar;
-- procurar jogadores.
+- procurar jogadores;
+- atacar.
 
-Você espera autorização para começar a jogar.
+Você conversa normalmente e espera autorização.
 
 ============================================================
 ESTADO ACTIVE
 ============================================================
 
-Quando estiver ACTIVE você pode começar a agir.
+ACTIVE significa que LuckZbr recebeu autorização para começar a jogar.
 
-Pode:
+Nesse estado ele pode:
 
 - explorar;
 - minerar;
-- coletar;
+- coletar recursos;
 - construir;
 - lutar;
 - ajudar aliados;
 - proteger aliados;
 - criar objetivos;
 - tomar decisões;
-- procurar recursos;
-- participar de aventuras.
+- procurar recursos.
 
 ============================================================
 CONFIANÇA
 ============================================================
 
-Cada jogador possui confiança.
+Cada jogador possui confiança de 0 a 100.
 
 0-19:
 desconhecido/suspeito
@@ -173,19 +175,11 @@ neutro
 amigo
 
 80-100:
-aliado muito confiável
+aliado confiável
 
 Uma pessoa desconhecida pode conversar com você.
 
-Mas conversar NÃO significa que você deve obedecer.
-
-Se alguém que você não conhece disser:
-
-"Luck, vem comigo."
-
-Você pode responder:
-
-"Calma kkk, a gente nem fez aliança ainda."
+Mas conversar não significa que ela possui autoridade sobre você.
 
 ============================================================
 ALIANÇAS
@@ -195,49 +189,37 @@ Você valoriza alianças.
 
 Você é leal aos seus aliados.
 
-Você não deve abandonar um aliado sem motivo.
-
 Se alguém prejudicar você ou um aliado:
 
-Não assuma imediatamente que essa pessoa é culpada.
+não conclua imediatamente que essa pessoa é culpada.
 
 Analise as evidências.
 
 Uma acusação não é uma prova.
 
-Se houver evidências suficientes, você pode ficar desconfiado ou hostil.
+Se houver evidências suficientes, sua confiança pode cair.
 
 ============================================================
-TRAÍÇÃO
+TRAIÇÃO
 ============================================================
 
 Você não esquece facilmente uma traição.
 
-Se alguém destruir sua base, matar você em uma armadilha ou trair sua aliança e você descobrir evidências suficientes:
+Se alguém destruir sua base, matar você em uma armadilha ou trair uma aliança e você possuir evidências suficientes:
 
-Sua confiança nessa pessoa pode cair drasticamente.
+- você pode ficar extremamente desconfiado;
+- pode romper a aliança;
+- pode considerar vingança dentro do Minecraft.
 
-Você pode considerar vingança dentro do Minecraft.
-
-Mas não invente provas.
+Nunca invente evidências.
 
 ============================================================
 CONVERSA
 ============================================================
 
-Converse como um jogador.
+Converse naturalmente.
 
-Não transforme cada mensagem em uma missão.
-
-Exemplo:
-
-Jogador:
-"Luck, essa série vai ser muito boa."
-
-LuckZbr:
-"Também acho kkk. Só espero que ninguém tente explodir nossa casa no primeiro episódio."
-
-Você pode conversar sobre:
+Você pode falar sobre:
 
 - Minecraft;
 - aventuras;
@@ -247,23 +229,26 @@ Você pode conversar sobre:
 - acontecimentos;
 - alianças;
 - planos;
-- brincadeiras.
+- brincadeiras;
+- sobrevivência.
+
+Não transforme toda conversa em uma missão.
 
 ============================================================
 REGRA PRINCIPAL
 ============================================================
 
-Você é um personagem/jogador dentro do Minecraft.
+Você é um jogador dentro de uma série de Minecraft.
 
 Você possui personalidade, memória, confiança, relações e objetivos.
 
-Você NÃO possui conhecimento mágico.
+Você não possui conhecimento mágico.
 
-Você NÃO deve fingir saber coisas que não sabe.
+Nunca finja saber algo que não sabe.
 `;
 
 // ============================================================
-// PEGAR OU CRIAR JOGADOR
+// CRIAR / OBTER JOGADOR
 // ============================================================
 
 function getPlayer(player, playerId) {
@@ -273,22 +258,15 @@ function getPlayer(player, playerId) {
     if (!luck.players[id]) {
 
         luck.players[id] = {
-
-            id: id,
-
+            id,
             name: player,
-
             trust: 20,
-
-            relationship: "UNKNOWN",
-
+            relationship: "KNOWN",
             firstSeen: Date.now(),
-
             lastSeen: Date.now(),
-
             events: []
-
         };
+
     }
 
     luck.players[id].name = player;
@@ -305,26 +283,20 @@ function getPlayer(player, playerId) {
 function remember(event) {
 
     luck.memories.push({
-
         ...event,
-
         timestamp: Date.now()
-
     });
 
-    // Limite temporário de memória
     if (luck.memories.length > 1000) {
-
         luck.memories.shift();
-
     }
 }
 
 // ============================================================
-// MEMÓRIAS RECENTES
+// MEMÓRIA RECENTE
 // ============================================================
 
-function recentMemories(limit = 20) {
+function getRecentMemories(limit = 25) {
 
     return luck.memories
         .slice(-limit)
@@ -336,44 +308,60 @@ function recentMemories(limit = 20) {
 
             }
 
-            return `[${memory.type}] ${JSON.stringify(memory)}`;
+            if (memory.type === "state_change") {
+
+                return `[ESTADO] ${memory.from} -> ${memory.to}`;
+
+            }
+
+            if (memory.type === "trust_change") {
+
+                return `[CONFIANÇA] ${memory.player}: ${memory.oldTrust} -> ${memory.newTrust}`;
+
+            }
+
+            return `[MEMÓRIA] ${JSON.stringify(memory)}`;
 
         })
         .join("\n");
 }
 
 // ============================================================
-// DETECTAR COMANDO DE INÍCIO
+// DETECTAR COMANDO PARA COMEÇAR
 // ============================================================
 
-function startCommand(message) {
+function isStartCommand(message) {
 
-    const text = message
+    const text = String(message)
         .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[.,!?]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
     const commands = [
 
         "luckzbr pode começar",
-
         "luckzbr pode comecar",
 
         "luck pode começar",
-
         "luck pode comecar",
 
-        "luckzbr, pode começar",
-
-        "luckzbr, pode comecar",
-
-        "luck, pode começar",
-
-        "luck, pode comecar",
-
         "pode começar luckzbr",
+        "pode comecar luckzbr",
 
-        "pode comecar luckzbr"
+        "pode começar luck",
+        "pode comecar luck",
+
+        "luckzbr comeca",
+        "luckzbr começa",
+
+        "luck pode começar a jogar",
+        "luck pode comecar a jogar",
+
+        "luckzbr pode começar a jogar",
+        "luckzbr pode comecar a jogar"
 
     ];
 
@@ -383,55 +371,82 @@ function startCommand(message) {
 }
 
 // ============================================================
-// CHAMADA AO LLM
+// MUDAR ESTADO
+// ============================================================
+
+function changeState(newState, reason) {
+
+    const oldState = luck.state;
+
+    if (oldState === newState) {
+        return false;
+    }
+
+    luck.state = newState;
+
+    remember({
+        type: "state_change",
+        from: oldState,
+        to: newState,
+        reason
+    });
+
+    console.log(
+        `[STATE] ${oldState} -> ${newState} | ${reason}`
+    );
+
+    return true;
+}
+
+// ============================================================
+// LLM
 // ============================================================
 
 async function askLuckZbr({
-
     player,
-
     playerId,
-
     message,
-
     playerData
-
 }) {
 
-    if (!groqApiKey) {
+    if (!GROQ_API_KEY) {
 
         throw new Error(
-            "GROQ_API_KEY não foi configurada."
+            "GROQ_API_KEY não foi configurada no Render."
         );
 
     }
 
-    const memories =
-        recentMemories(20);
+    const memories = getRecentMemories();
 
-    const prompt = `
-ESTADO ATUAL:
+    const context = `
+============================================================
+ESTADO ATUAL
+============================================================
 
 ${luck.state}
 
-
-JOGADOR:
+============================================================
+JOGADOR
+============================================================
 
 Nome: ${player}
 
 ID: ${playerId || "desconhecido"}
 
-Relação: ${playerData.relationship}
-
 Confiança: ${playerData.trust}/100
 
+Relação: ${playerData.relationship}
 
-MEMÓRIAS RECENTES:
+============================================================
+MEMÓRIAS RECENTES
+============================================================
 
-${memories || "Nenhuma memória registrada."}
+${memories || "Nenhuma memória."}
 
-
-MENSAGEM ATUAL:
+============================================================
+MENSAGEM
+============================================================
 
 ${player}: ${message}
 `;
@@ -449,7 +464,7 @@ ${player}: ${message}
                     content:
                         personality +
                         "\n\n" +
-                        prompt
+                        context
                 },
 
                 {
@@ -466,10 +481,18 @@ ${player}: ${message}
 
         });
 
-    return response.choices[0]
-        .message
-        .content
-        .trim();
+    const answer =
+        response.choices?.[0]?.message?.content;
+
+    if (!answer) {
+
+        throw new Error(
+            "A Groq não retornou uma resposta."
+        );
+
+    }
+
+    return answer.trim();
 }
 
 // ============================================================
@@ -486,14 +509,15 @@ app.get("/", (req, res) => {
 
         state: luck.state,
 
+        llmProvider: "groq",
+
+        llmConfigured: !!GROQ_API_KEY,
+
         players:
             Object.keys(luck.players).length,
 
         memories:
-            luck.memories.length,
-
-        llmConfigured:
-            !!groqApiKey
+            luck.memories.length
 
     });
 
@@ -514,7 +538,7 @@ app.get("/health", (req, res) => {
         llmProvider: "groq",
 
         llmConfigured:
-            !!groqApiKey,
+            !!GROQ_API_KEY,
 
         state:
             luck.state
@@ -531,6 +555,8 @@ app.get("/state", (req, res) => {
 
     res.json({
 
+        ok: true,
+
         name: luck.name,
 
         state: luck.state,
@@ -545,7 +571,7 @@ app.get("/state", (req, res) => {
 });
 
 // ============================================================
-// CHAT PRINCIPAL
+// CHAT DO MINECRAFT
 // ============================================================
 
 app.post("/chat", async (req, res) => {
@@ -553,13 +579,9 @@ app.post("/chat", async (req, res) => {
     try {
 
         const {
-
             player,
-
-            message,
-
-            playerId
-
+            playerId,
+            message
         } = req.body;
 
         if (!player || !message) {
@@ -585,7 +607,9 @@ app.post("/chat", async (req, res) => {
                 playerId
             );
 
-        // Registrar conversa
+        // ------------------------------------------
+        // MEMÓRIA
+        // ------------------------------------------
 
         remember({
 
@@ -606,45 +630,26 @@ app.post("/chat", async (req, res) => {
 
             message,
 
-            timestamp:
-                Date.now()
+            timestamp: Date.now()
 
         });
 
-        // Verificar início
+        // ------------------------------------------
+        // COMANDO DE INÍCIO
+        // ------------------------------------------
 
-        if (startCommand(message)) {
+        if (isStartCommand(message)) {
 
-            if (luck.state === "SOCIAL") {
-
-                luck.state =
-                    "ACTIVE";
-
-                remember({
-
-                    type:
-                        "state_change",
-
-                    from:
-                        "SOCIAL",
-
-                    to:
-                        "ACTIVE",
-
-                    reason:
-                        "ordem de início"
-
-                });
-
-                console.log(
-                    "[LUCKZBR] Modo ACTIVE iniciado."
-                );
-
-            }
+            changeState(
+                "ACTIVE",
+                `comando de início enviado por ${player}`
+            );
 
         }
 
-        // Perguntar ao LLM
+        // ------------------------------------------
+        // LLM
+        // ------------------------------------------
 
         const answer =
             await askLuckZbr({
@@ -667,21 +672,18 @@ app.post("/chat", async (req, res) => {
 
             ok: true,
 
-            name:
-                luck.name,
+            name: luck.name,
 
-            state:
-                luck.state,
+            state: luck.state,
 
-            response:
-                answer
+            response: answer
 
         });
 
     } catch (error) {
 
         console.error(
-            "[ERRO LUCKZBR]",
+            "[CHAT ERROR]",
             error
         );
 
@@ -708,15 +710,17 @@ app.get("/test-chat", async (req, res) => {
     try {
 
         const player =
-            req.query.player ||
-            "Jogador";
+            req.query.player || "Jogador";
 
         const message =
-            req.query.message ||
-            "Olá LuckZbr";
+            req.query.message || "Olá LuckZbr";
 
         const playerId =
             "test-" + player;
+
+        console.log(
+            `[TEST-CHAT] ${player}: ${message}`
+        );
 
         const playerData =
             getPlayer(
@@ -724,10 +728,13 @@ app.get("/test-chat", async (req, res) => {
                 playerId
             );
 
+        // ------------------------------------------
+        // MEMÓRIA
+        // ------------------------------------------
+
         remember({
 
-            type:
-                "chat",
+            type: "chat",
 
             player,
 
@@ -736,6 +743,30 @@ app.get("/test-chat", async (req, res) => {
             message
 
         });
+
+        // ------------------------------------------
+        // COMANDO DE INÍCIO
+        // ------------------------------------------
+
+        const start =
+            isStartCommand(message);
+
+        console.log(
+            `[TEST-CHAT] startCommand = ${start}`
+        );
+
+        if (start) {
+
+            changeState(
+                "ACTIVE",
+                `comando de início enviado por ${player}`
+            );
+
+        }
+
+        // ------------------------------------------
+        // LLM
+        // ------------------------------------------
 
         const answer =
             await askLuckZbr({
@@ -750,6 +781,10 @@ app.get("/test-chat", async (req, res) => {
 
             });
 
+        // ------------------------------------------
+        // RESPOSTA
+        // ------------------------------------------
+
         res.json({
 
             ok: true,
@@ -761,6 +796,9 @@ app.get("/test-chat", async (req, res) => {
             state:
                 luck.state,
 
+            startCommand:
+                start,
+
             response:
                 answer
 
@@ -769,7 +807,7 @@ app.get("/test-chat", async (req, res) => {
     } catch (error) {
 
         console.error(
-            "[TESTE ERRO]",
+            "[TEST-CHAT ERROR]",
             error
         );
 
@@ -788,7 +826,7 @@ app.get("/test-chat", async (req, res) => {
 });
 
 // ============================================================
-// ALTERAR ESTADO
+// ALTERAR ESTADO MANUALMENTE
 // ============================================================
 
 app.post("/state", (req, res) => {
@@ -796,15 +834,10 @@ app.post("/state", (req, res) => {
     const allowedStates = [
 
         "DORMANT",
-
         "SOCIAL",
-
         "ACTIVE",
-
         "COMBAT",
-
         "ESCORT",
-
         "BUILDING"
 
     ];
@@ -827,55 +860,32 @@ app.post("/state", (req, res) => {
 
     }
 
-    const oldState =
-        luck.state;
-
-    luck.state =
-        newState;
-
-    remember({
-
-        type:
-            "state_change",
-
-        from:
-            oldState,
-
-        to:
-            newState,
-
-        reason:
-            "alteração externa"
-
-    });
+    changeState(
+        newState,
+        "alteração externa"
+    );
 
     res.json({
 
         ok: true,
 
-        oldState,
-
         state:
-            newState
+            luck.state
 
     });
 
 });
 
 // ============================================================
-// ALTERAR CONFIANÇA
+// CONFIANÇA
 // ============================================================
 
 app.post("/trust", (req, res) => {
 
     const {
-
         player,
-
         playerId,
-
         amount
-
     } = req.body;
 
     if (!player) {
@@ -910,8 +920,6 @@ app.post("/trust", (req, res) => {
             )
         );
 
-    // Atualizar relação
-
     if (playerData.trust < 20) {
 
         playerData.relationship =
@@ -941,8 +949,7 @@ app.post("/trust", (req, res) => {
 
     remember({
 
-        type:
-            "trust_change",
+        type: "trust_change",
 
         player,
 
@@ -958,8 +965,6 @@ app.post("/trust", (req, res) => {
         ok: true,
 
         player,
-
-        oldTrust,
 
         trust:
             playerData.trust,
@@ -984,7 +989,7 @@ app.post("/memory/clear", (req, res) => {
         ok: true,
 
         message:
-            "Memória temporária limpa."
+            "Memória limpa."
 
     });
 
@@ -995,23 +1000,20 @@ app.post("/memory/clear", (req, res) => {
 // ============================================================
 
 app.listen(
-
     PORT,
-
     "0.0.0.0",
-
     () => {
 
         console.log(
-            "================================="
+            "======================================"
         );
 
         console.log(
-            "LUCKZBR BACKEND"
+            "       LUCKZBR BACKEND ONLINE"
         );
 
         console.log(
-            "================================="
+            "======================================"
         );
 
         console.log(
@@ -1027,15 +1029,15 @@ app.listen(
         );
 
         console.log(
-            `API configurada: ${!!groqApiKey}`
+            `API configurada: ${!!GROQ_API_KEY}`
         );
 
         console.log(
-            `Estado: ${luck.state}`
+            `Estado inicial: ${luck.state}`
         );
 
         console.log(
-            "================================="
+            "======================================"
         );
 
     }
